@@ -39,7 +39,6 @@
         .hidden { display: none !important; }
         .no-scroll { overflow: hidden !important; }
 
-        /* Liquid Canvas Background */
         .liquid-bg-container {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             z-index: -1; opacity: 0; visibility: hidden;
@@ -49,7 +48,6 @@
         .liquid-bg-container.active { opacity: 1; visibility: visible; }
         #fluid-canvas { width: 100%; height: 100%; display: block; }
 
-        /* Navigation */
         .nav-wrapper {
             position: fixed; top: 20px; left: 0; width: 100%;
             display: flex; justify-content: center; z-index: 1000;
@@ -102,7 +100,6 @@
         .theme-btn { width: 30px; height: 30px; border-radius: 50%; border: 2px solid transparent; cursor: pointer; }
         .theme-btn.active { border-color: white; transform: scale(1.1); }
 
-        /* Views */
         .view {
             position: absolute; top: 0; left: 0; width: 100%; min-height: 100vh;
             opacity: 0; pointer-events: none; visibility: hidden;
@@ -110,7 +107,6 @@
         }
         .view.active { opacity: 1; pointer-events: auto; visibility: visible; position: relative; z-index: 10; }
 
-        /* Hero */
         .hero { position: relative; height: 85vh; min-height: 560px; display: flex; align-items: flex-end; padding: 0 5% 8%; overflow: hidden; }
         .hero-bg { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-size: cover; background-position: center 20%; z-index: -2; transition: opacity 0.8s var(--ease-out-expo); }
         .hero-bg.fading { opacity: 0; }
@@ -140,7 +136,7 @@
         .hero-meta .match { color: #46d369; font-weight: 700; }
         .hero-desc { font-size: 1.05rem; line-height: 1.6; color: rgba(255,255,255,0.85); margin-bottom: 26px; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
         
-        .hero-btns { display: flex; align-items: center; gap: 12px; }
+        .hero-btns { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
         .btn-play { background: white; color: black; padding: 12px 28px; border-radius: 50px; font-weight: 800; font-size: 1rem; display: flex; align-items: center; gap: 8px; transition: transform 0.3s var(--ease-out-back); }
         .btn-play:hover { transform: scale(1.05); }
 
@@ -152,7 +148,6 @@
         .circle-btn:hover { background: white; color: black; transform: scale(1.1); }
         .circle-btn.active { background: white; color: black; }
 
-        /* Hero Dot Indicators */
         .hero-dots {
             position: absolute; bottom: 6%; left: 5%; z-index: 20;
             display: flex; gap: 8px; align-items: center;
@@ -166,7 +161,6 @@
         .hero-dot:hover { background: rgba(255,255,255,0.65); transform: scale(1.2); }
         .hero-dot.active { background: #fff; width: 26px; border-radius: 8px; }
 
-        /* Provider Quick Bar */
         .provider-bar-section { padding: 20px 5% 0; }
         .provider-quick-bar { display: flex; align-items: center; gap: 12px; overflow-x: auto; padding: 10px 0; scrollbar-width: none; }
         .provider-quick-bar::-webkit-scrollbar { display: none; }
@@ -180,7 +174,6 @@
         .provider-pill:hover { background: rgba(255,255,255,0.15); color: white; transform: scale(1.05); }
         .provider-pill.active { background: white; color: black; border-color: white; }
 
-        /* Filter Bar (Sticky Logic) */
         .filter-wrapper { position: relative; height: 50px; margin: 0 5% 20px; z-index: 100; }
         .filter-bar {
             display: flex; gap: 10px; align-items: center; flex-wrap: nowrap; overflow-x: auto;
@@ -224,7 +217,6 @@
         .dropdown-item:hover { background: rgba(255,255,255,0.08); color: white; }
         .dropdown-item.selected { color: white; font-weight: 600; }
 
-        /* Rows & Posters */
         .content-section { position: relative; z-index: 10; padding: 20px 0 60px; }
         .row { margin-bottom: 34px; }
         .row-header { display: flex; align-items: center; gap: 8px; padding: 0 5%; margin-bottom: 8px; position: relative; }
@@ -288,7 +280,6 @@
         .card:hover .card-play-center { opacity: 1; transform: translate(-50%, -50%) scale(1); }
         .card:hover .card-info { transform: translateY(0); opacity: 1; }
 
-        /* Search View */
         #search-view { padding: 130px 5% 50px; }
         .search-header-layout { max-width: 860px; margin: 0 auto 50px; text-align: center; }
         .search-title { font-size: 2.8rem; font-weight: 800; margin-bottom: 30px; text-shadow: 0 4px 20px rgba(0,0,0,0.5); }
@@ -304,7 +295,6 @@
         .search-input::placeholder { color: rgba(255,255,255,0.7); }
         .search-grid, .mylist-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 20px; padding: 20px 0; }
 
-        /* My List */
         #mylist-view { padding: 130px 5% 50px; }
         .mylist-header { display: flex; align-items: center; gap: 14px; margin-bottom: 36px; }
         .mylist-header h1 { font-size: 2.8rem; font-weight: 800; }
@@ -313,7 +303,6 @@
             border-radius: 20px; padding: 100px 20px; text-align: center; max-width: 760px; margin: 0 auto;
         }
 
-        /* Details & Modals */
         .modal-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: var(--bg-base); z-index: 2000;
@@ -330,7 +319,7 @@
         .details-meta-row { display: flex; flex-wrap: wrap; align-items: center; gap: 14px; font-size: 0.95rem; font-weight: 600; color: #ddd; margin-bottom: 20px; }
         .details-meta-box { border: 1px solid rgba(255,255,255,0.4); padding: 2px 8px; border-radius: 4px; font-size: 0.8rem; font-weight: 700;}
         .details-desc { font-size: 1.1rem; line-height: 1.6; color: rgba(255,255,255,0.85); margin-bottom: 30px; }
-        .details-actions { display: flex; align-items: center; gap: 14px; margin-bottom: 35px; }
+        .details-actions { display: flex; align-items: center; gap: 14px; margin-bottom: 35px; flex-wrap: wrap; }
 
         .details-section { padding: 10px 5% 35px; position: relative; z-index: 10; }
         .details-section h3 { font-size: 1.35rem; font-weight: 700; margin-bottom: 20px; color: white; }
@@ -367,6 +356,22 @@
         .loader { width: 40px; height: 40px; border: 4px solid rgba(255,255,255,0.1); border-top-color: var(--primary); border-radius: 50%; animation: spin 1s linear infinite; margin: 40px auto; }
         @keyframes spin { to { transform: rotate(360deg); } }
         @keyframes slideUpFade { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* === SHARE TOAST === */
+        .toast {
+            position: fixed; bottom: 40px; left: 50%; transform: translateX(-50%) translateY(20px);
+            background: rgba(20, 20, 20, 0.95); backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            color: #fff; padding: 14px 26px; border-radius: 50px;
+            font-size: 0.95rem; font-weight: 600;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.7);
+            opacity: 0; visibility: hidden; z-index: 9999;
+            transition: all 0.35s var(--ease-out-expo);
+            display: flex; align-items: center; gap: 10px;
+            pointer-events: none;
+        }
+        .toast.show { opacity: 1; visibility: visible; transform: translateX(-50%) translateY(0); }
+        .toast svg { width: 18px; height: 18px; flex-shrink: 0; }
 
         @media(max-width: 768px) {
             .nav-link span:not(.nav-icon) { display: none; }
@@ -476,6 +481,9 @@
                     <button class="btn-play" id="hero-play"><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg> Play</button>
                     <button class="circle-btn" id="hero-list" aria-label="Add to List">
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                    </button>
+                    <button class="circle-btn" id="hero-share" aria-label="Share">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line></svg>
                     </button>
                     <button class="circle-btn" id="hero-trailer-btn" aria-label="Watch Trailer" style="display:none;">
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="23 7 16 12 23 17 23 7"></polygon><rect x="1" y="5" width="15" height="14" rx="2" ry="2"></rect></svg>
@@ -672,6 +680,9 @@
                     <button class="circle-btn" id="details-list" aria-label="Add to List">
                         <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" id="list-icon"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
                     </button>
+                    <button class="circle-btn" id="details-share" aria-label="Share">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line></svg>
+                    </button>
                     <button class="circle-btn" id="details-trailer-btn" aria-label="Play Trailer" style="display: none;">
                         <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="23 7 16 12 23 17 23 7"></polygon><rect x="1" y="5" width="15" height="14" rx="2" ry="2"></rect></svg>
                     </button>
@@ -710,6 +721,12 @@
             <button class="circle-btn" onclick="app.closePlayer()"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>
         </div>
         <div class="iframe-container" id="iframe-container"></div>
+    </div>
+
+    <!-- Toast for share confirmation -->
+    <div class="toast" id="toast">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#46d369" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg>
+        <span id="toast-msg">Link copied to clipboard</span>
     </div>
 
     <script>
@@ -890,7 +907,7 @@
             heroIndex: 0,
             heroTimer: null,
             heroPaused: false,
-            HERO_INTERVAL: 5000,   // ← was 8000, now 5s
+            HERO_INTERVAL: 5000,
 
             footerHTML: `
                 <footer class="site-footer">
@@ -974,18 +991,88 @@
                     this.searchTimeout = setTimeout(() => this.doSearch(q), 500);
                 });
 
+                // Pause hero rotation while hovering (desktop only)
                 const heroEl = document.getElementById('home-hero');
-                if (heroEl) {
+                if (heroEl && window.matchMedia('(hover: hover)').matches) {
                     heroEl.addEventListener('mouseenter', () => { this.heroPaused = true; });
                     heroEl.addEventListener('mouseleave', () => { this.heroPaused = false; });
                 }
 
+                // Listen for hash changes (deep links)
+                window.addEventListener('hashchange', () => this.handleDeepLink());
+
                 this.setTheme(localStorage.getItem('jovy_theme') || 'green');
                 this.setupFilterDropdowns();
-                this.loadHome();
+                this.loadHome().then(() => this.handleDeepLink());
                 this.updateWatchedSection();
                 this.loadProviderRow('movie', '', 'All Providers');
                 this.loadProviderRow('tv', '', 'All Providers');
+            },
+
+            // ====== DEEP LINK HANDLING ======
+            handleDeepLink() {
+                const hash = window.location.hash;
+                // Expected: #watch=movie/12345 or #watch=tv/12345
+                const match = hash.match(/^#watch=(movie|tv)\/(\d+)/);
+                if (!match) return;
+
+                const type = match[1];
+                const id = parseInt(match[2], 10);
+                if (!id) return;
+
+                // Open the details modal for that title
+                this.openDetails(id, type);
+            },
+
+            // ====== SHARE ======
+            async shareTitle(id, type, title) {
+                const url = `${window.location.origin}${window.location.pathname}#watch=${type}/${id}`;
+                const shareText = `Watch "${title}" on JOVY`;
+                const shareData = {
+                    title: title,
+                    text: shareText,
+                    url: url
+                };
+
+                // Try native Web Share API (mobile browsers)
+                if (navigator.share) {
+                    try {
+                        await navigator.share(shareData);
+                        return;
+                    } catch (err) {
+                        // User cancelled or share failed — fall through to copy
+                        if (err && err.name === 'AbortError') return;
+                    }
+                }
+
+                // Fallback: copy to clipboard
+                try {
+                    await navigator.clipboard.writeText(url);
+                    this.showToast('Link copied to clipboard');
+                } catch {
+                    // Last resort: use a temp textarea
+                    const ta = document.createElement('textarea');
+                    ta.value = url;
+                    ta.style.position = 'fixed';
+                    ta.style.opacity = '0';
+                    document.body.appendChild(ta);
+                    ta.select();
+                    try {
+                        document.execCommand('copy');
+                        this.showToast('Link copied to clipboard');
+                    } catch {
+                        this.showToast('Could not copy link');
+                    }
+                    document.body.removeChild(ta);
+                }
+            },
+
+            showToast(msg) {
+                const toast = document.getElementById('toast');
+                document.getElementById('toast-msg').textContent = msg;
+                toast.classList.add('show');
+                clearTimeout(this._toastTimer);
+                this._toastTimer = setTimeout(() => toast.classList.remove('show'), 2600);
             },
 
             setTheme(c) {
@@ -1185,13 +1272,10 @@
                 }
             },
 
-            // ====== HERO ROTATION ======
             async loadHome() {
                 const trending = await api.fetch('/trending/all/day');
                 const results = trending?.results || [];
 
-                // Looser candidate filter — prefer items with backdrop + overview, but
-                // fall back to anything with a backdrop so we always get multiple heroes.
                 let heroCandidates = results
                     .filter(i => i.backdrop_path && i.overview && (i.media_type === 'movie' || i.media_type === 'tv'))
                     .slice(0, 5);
@@ -1206,7 +1290,6 @@
 
                 if (!heroCandidates.length) return;
 
-                // Fetch details per item, but don't let one failure kill the batch
                 const detailed = (await Promise.all(heroCandidates.map(async (item) => {
                     const type = item.media_type || 'movie';
                     try {
@@ -1221,7 +1304,6 @@
                 this.heroIndex = 0;
                 this.renderHero(0);
 
-                // Build dots
                 const dotsEl = document.getElementById('hero-dots');
                 dotsEl.innerHTML = this.heroItems.map((_, i) =>
                     `<button class="hero-dot${i === 0 ? ' active' : ''}" data-index="${i}" aria-label="Go to slide ${i+1}"></button>`
@@ -1307,6 +1389,10 @@
                         updateHeroListBtn();
                     };
 
+                    // Share button wiring
+                    const heroShareBtn = document.getElementById('hero-share');
+                    heroShareBtn.onclick = () => this.shareTitle(hero.id, type, title);
+
                     const heroTrailerBtn = document.getElementById('hero-trailer-btn');
                     const tr = (hero.videos?.results || []).find(v => v.type === 'Trailer' && v.site === 'YouTube');
                     if (tr) {
@@ -1331,17 +1417,24 @@
 
             startHeroTimer() {
                 this.stopHeroTimer();
-                this.heroTimer = setInterval(() => {
-                    if (this.heroPaused) return;
-                    if (this.heroItems.length < 2) return;   // nothing to rotate
+                if (this.heroItems.length < 2) return;
+
+                const tick = () => {
+                    if (this.heroPaused) {
+                        this.heroTimer = setTimeout(tick, 1000);
+                        return;
+                    }
                     this.heroIndex = (this.heroIndex + 1) % this.heroItems.length;
                     this.renderHero(this.heroIndex);
-                }, this.HERO_INTERVAL);
+                    this.heroTimer = setTimeout(tick, this.HERO_INTERVAL);
+                };
+
+                this.heroTimer = setTimeout(tick, this.HERO_INTERVAL);
             },
 
             stopHeroTimer() {
                 if (this.heroTimer) {
-                    clearInterval(this.heroTimer);
+                    clearTimeout(this.heroTimer);
                     this.heroTimer = null;
                 }
             },
@@ -1349,7 +1442,6 @@
             restartHeroTimer() {
                 this.startHeroTimer();
             },
-            // ====== END HERO ROTATION ======
 
             startHomeCarousels() {
                 document.querySelectorAll('#home-view .carousel').forEach(c => {
@@ -1481,6 +1573,10 @@
                 updateBtn();
                 listBtn.onclick = () => { storage.toggleList({ id, title, poster_path: data.poster_path, media_type: type }); updateBtn(); };
 
+                // Share button wiring in details
+                const shareBtn = document.getElementById('details-share');
+                shareBtn.onclick = () => this.shareTitle(id, type, title);
+
                 const trBtn = document.getElementById('details-trailer-btn');
                 const tr = (data.videos?.results || []).find(v => v.type === 'Trailer' && v.site === 'YouTube');
                 if (tr) {
@@ -1538,6 +1634,10 @@
             closeDetails() {
                 document.getElementById('details-modal').classList.remove('active');
                 document.body.classList.remove('no-scroll');
+                // Clear the hash so refreshing doesn't reopen
+                if (window.location.hash.startsWith('#watch=')) {
+                    history.replaceState(null, '', window.location.pathname);
+                }
             },
 
             openTrailer(k) {
