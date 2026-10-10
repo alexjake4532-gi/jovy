@@ -330,12 +330,75 @@
         .cast-name { font-size: 0.85rem; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-bottom: 2px; }
         .cast-role { font-size: 0.75rem; color: var(--text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
-        #yt-modal { 
-            background: rgba(0,0,0,0.85); backdrop-filter: blur(25px); 
-            display: flex; align-items: center; justify-content: center; z-index: 5000; padding: 5%; 
+        /* === TRAILERS ROW === */
+        .trailers-row {
+            display: flex; gap: 16px; overflow-x: auto; padding-bottom: 10px;
+            scrollbar-width: none;
         }
-        .yt-container { width: 100%; max-width: 1050px; aspect-ratio: 16/9; background: black; border-radius: 16px; overflow: hidden; position: relative; box-shadow: 0 30px 60px rgba(0,0,0,0.8); }
-        .yt-close { position: absolute; top: -45px; right: 0; color: white; width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 1px solid rgba(255,255,255,0.3); background: rgba(255,255,255,0.1); cursor: pointer; transition: all 0.2s;}
+        .trailers-row::-webkit-scrollbar { display: none; }
+        .trailer-card {
+            flex: 0 0 280px; cursor: pointer; border-radius: 12px; overflow: hidden;
+            background: #141414; position: relative;
+            transition: transform 0.3s var(--ease-out-back);
+            border: 1px solid rgba(255,255,255,0.08);
+        }
+        .trailer-card:hover { transform: translateY(-4px) scale(1.03); border-color: rgba(255,255,255,0.3); }
+        .trailer-thumb {
+            width: 100%; aspect-ratio: 16/9; object-fit: cover; display: block;
+            background: #222;
+        }
+        .trailer-play-overlay {
+            position: absolute; top: 0; left: 0; width: 100%; height: 158px;
+            display: flex; align-items: center; justify-content: center;
+            pointer-events: none;
+        }
+        .trailer-play-icon {
+            width: 52px; height: 52px; border-radius: 50%; background: rgba(0,0,0,0.65);
+            border: 2px solid rgba(255,255,255,0.85);
+            display: flex; align-items: center; justify-content: center;
+            backdrop-filter: blur(6px);
+            transition: all 0.3s var(--ease-out-back);
+        }
+        .trailer-card:hover .trailer-play-icon {
+            background: #fff; border-color: #fff; transform: scale(1.15);
+        }
+        .trailer-play-icon svg { width: 18px; height: 18px; fill: #fff; margin-left: 3px; }
+        .trailer-card:hover .trailer-play-icon svg { fill: #000; }
+        .trailer-info { padding: 10px 12px 12px; position: relative; }
+        .trailer-name {
+            font-size: 0.88rem; font-weight: 700; color: #fff; line-height: 1.3;
+            display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+        .trailer-type {
+            font-size: 0.75rem; color: var(--text-muted); font-weight: 600;
+            text-transform: uppercase; letter-spacing: 0.5px; margin-top: 4px;
+        }
+
+        /* === FULLSCREEN YOUTUBE MODAL === */
+        #yt-modal { 
+            background: #000; z-index: 5000; padding: 0;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .yt-container { 
+            width: 100%; height: 100%; background: black; overflow: hidden; position: relative; 
+        }
+        .yt-container iframe,
+        #yt-iframe-container iframe {
+            position: absolute; top: 0; left: 0;
+            width: 100%; height: 100%; border: none;
+        }
+        #yt-iframe-container {
+            width: 100%; height: 100%; position: relative;
+        }
+        .yt-close { 
+            position: fixed; top: 20px; right: 20px; color: white; z-index: 5100;
+            width: 44px; height: 44px; border-radius: 50%; 
+            display: flex; align-items: center; justify-content: center; 
+            border: 1px solid rgba(255,255,255,0.3); 
+            background: rgba(20,20,20,0.75); backdrop-filter: blur(15px);
+            cursor: pointer; transition: all 0.2s;
+        }
         .yt-close:hover { background: white; color: black; transform: scale(1.1); }
 
         #player-modal { background: black; z-index: 4000; display: flex; flex-direction: column; }
@@ -357,7 +420,6 @@
         @keyframes spin { to { transform: rotate(360deg); } }
         @keyframes slideUpFade { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* === SHARE TOAST === */
         .toast {
             position: fixed; bottom: 40px; left: 50%; transform: translateX(-50%) translateY(20px);
             background: rgba(20, 20, 20, 0.95); backdrop-filter: blur(20px);
@@ -381,6 +443,8 @@
             .search-title { font-size: 2rem; }
             .title-logo-img { max-width: min(290px, 80vw); max-height: 105px; }
             .hero-dots { bottom: 3%; }
+            .trailer-card { flex: 0 0 240px; }
+            .trailer-play-overlay { height: 135px; }
         }
 
         #home-view .carousel {
@@ -695,6 +759,11 @@
             <div class="cast-row" id="cast-container"></div>
         </div>
 
+        <div class="details-section hidden" id="trailers-section">
+            <h3>Trailers & Clips</h3>
+            <div class="trailers-row" id="trailers-container"></div>
+        </div>
+
         <div class="details-section hidden" id="collection-section">
             <h3 id="collection-title">Part of Collection</h3>
             <div class="carousel" style="padding: 10px 0;" id="collection-container"></div>
@@ -708,10 +777,16 @@
         <div id="details-footer"></div>
     </div>
 
+    <!-- FULLSCREEN YOUTUBE TRAILER MODAL -->
     <div id="yt-modal" class="modal-overlay" style="z-index: 5000;">
+        <button class="yt-close" onclick="app.closeTrailer()" aria-label="Close trailer">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <line x1="18" y1="6" x2="6" y2="18"></line>
+                <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
+        </button>
         <div class="yt-container">
-            <button class="yt-close" onclick="app.closeTrailer()"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>
-            <div id="yt-iframe-container" style="width:100%; height:100%;"></div>
+            <div id="yt-iframe-container"></div>
         </div>
     </div>
 
@@ -723,7 +798,6 @@
         <div class="iframe-container" id="iframe-container"></div>
     </div>
 
-    <!-- Toast for share confirmation -->
     <div class="toast" id="toast">
         <svg viewBox="0 0 24 24" fill="none" stroke="#46d369" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg>
         <span id="toast-msg">Link copied to clipboard</span>
@@ -991,14 +1065,12 @@
                     this.searchTimeout = setTimeout(() => this.doSearch(q), 500);
                 });
 
-                // Pause hero rotation while hovering (desktop only)
                 const heroEl = document.getElementById('home-hero');
                 if (heroEl && window.matchMedia('(hover: hover)').matches) {
                     heroEl.addEventListener('mouseenter', () => { this.heroPaused = true; });
                     heroEl.addEventListener('mouseleave', () => { this.heroPaused = false; });
                 }
 
-                // Listen for hash changes (deep links)
                 window.addEventListener('hashchange', () => this.handleDeepLink());
 
                 this.setTheme(localStorage.getItem('jovy_theme') || 'green');
@@ -1009,10 +1081,8 @@
                 this.loadProviderRow('tv', '', 'All Providers');
             },
 
-            // ====== DEEP LINK HANDLING ======
             handleDeepLink() {
                 const hash = window.location.hash;
-                // Expected: #watch=movie/12345 or #watch=tv/12345
                 const match = hash.match(/^#watch=(movie|tv)\/(\d+)/);
                 if (!match) return;
 
@@ -1020,37 +1090,15 @@
                 const id = parseInt(match[2], 10);
                 if (!id) return;
 
-                // Open the details modal for that title
                 this.openDetails(id, type);
             },
 
-            // ====== SHARE ======
             async shareTitle(id, type, title) {
                 const url = `${window.location.origin}${window.location.pathname}#watch=${type}/${id}`;
-                const shareText = `Watch "${title}" on JOVY`;
-                const shareData = {
-                    title: title,
-                    text: shareText,
-                    url: url
-                };
-
-                // Try native Web Share API (mobile browsers)
-                if (navigator.share) {
-                    try {
-                        await navigator.share(shareData);
-                        return;
-                    } catch (err) {
-                        // User cancelled or share failed — fall through to copy
-                        if (err && err.name === 'AbortError') return;
-                    }
-                }
-
-                // Fallback: copy to clipboard
                 try {
                     await navigator.clipboard.writeText(url);
                     this.showToast('Link copied to clipboard');
                 } catch {
-                    // Last resort: use a temp textarea
                     const ta = document.createElement('textarea');
                     ta.value = url;
                     ta.style.position = 'fixed';
@@ -1286,8 +1334,6 @@
                         .slice(0, 5);
                 }
 
-                console.log('[JOVY] Hero candidates:', heroCandidates.length, heroCandidates.map(h => h.title || h.name));
-
                 if (!heroCandidates.length) return;
 
                 const detailed = (await Promise.all(heroCandidates.map(async (item) => {
@@ -1389,7 +1435,6 @@
                         updateHeroListBtn();
                     };
 
-                    // Share button wiring
                     const heroShareBtn = document.getElementById('hero-share');
                     heroShareBtn.onclick = () => this.shareTitle(hero.id, type, title);
 
@@ -1573,7 +1618,6 @@
                 updateBtn();
                 listBtn.onclick = () => { storage.toggleList({ id, title, poster_path: data.poster_path, media_type: type }); updateBtn(); };
 
-                // Share button wiring in details
                 const shareBtn = document.getElementById('details-share');
                 shareBtn.onclick = () => this.shareTitle(id, type, title);
 
@@ -1595,6 +1639,29 @@
                     `).join('');
                     castSec.classList.remove('hidden');
                 } else castSec.classList.add('hidden');
+
+                // Trailers section
+                const trailersSec = document.getElementById('trailers-section');
+                const trailerVids = (data.videos?.results || []).filter(v => v.site === 'YouTube' && ['Trailer', 'Teaser', 'Clip', 'Featurette'].includes(v.type));
+                if (trailerVids.length) {
+                    document.getElementById('trailers-container').innerHTML = trailerVids.slice(0, 10).map(v => `
+                        <div class="trailer-card" onclick="app.openTrailer('${v.key}')">
+                            <img class="trailer-thumb" src="https://img.youtube.com/vi/${v.key}/hqdefault.jpg" alt="${(v.name||'').replace(/"/g,'&quot;')}" loading="lazy">
+                            <div class="trailer-play-overlay">
+                                <div class="trailer-play-icon">
+                                    <svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+                                </div>
+                            </div>
+                            <div class="trailer-info">
+                                <div class="trailer-name">${v.name || 'Trailer'}</div>
+                                <div class="trailer-type">${v.type}</div>
+                            </div>
+                        </div>
+                    `).join('');
+                    trailersSec.classList.remove('hidden');
+                } else {
+                    trailersSec.classList.add('hidden');
+                }
 
                 const colSec = document.getElementById('collection-section');
                 if (type === 'movie' && data.belongs_to_collection) {
@@ -1634,14 +1701,13 @@
             closeDetails() {
                 document.getElementById('details-modal').classList.remove('active');
                 document.body.classList.remove('no-scroll');
-                // Clear the hash so refreshing doesn't reopen
                 if (window.location.hash.startsWith('#watch=')) {
                     history.replaceState(null, '', window.location.pathname);
                 }
             },
 
             openTrailer(k) {
-                document.getElementById('yt-iframe-container').innerHTML = `<iframe src="https://www.youtube.com/embed/${k}?autoplay=1&modestbranding=1&rel=0&iv_load_policy=3" allow="autoplay; encrypted-media" allowfullscreen></iframe>`;
+                document.getElementById('yt-iframe-container').innerHTML = `<iframe src="https://www.youtube.com/embed/${k}?autoplay=1&modestbranding=1&rel=0&iv_load_policy=3" allow="autoplay; encrypted-media; fullscreen" allowfullscreen></iframe>`;
                 document.getElementById('yt-modal').classList.add('active');
             },
 
