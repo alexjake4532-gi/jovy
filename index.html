@@ -280,6 +280,22 @@
         .card:hover .card-play-center { opacity: 1; transform: translate(-50%, -50%) scale(1); }
         .card:hover .card-info { transform: translateY(0); opacity: 1; }
 
+        /* === RESUME PROGRESS BAR ON CARD === */
+        .card-progress-bar {
+            position: absolute; left: 0; bottom: 0; height: 4px;
+            background: var(--primary); border-bottom-left-radius: 12px; border-bottom-right-radius: 12px;
+            z-index: 5; transition: width 0.3s;
+        }
+        .card-resume-badge {
+            position: absolute; top: 10px; left: 10px;
+            background: rgba(0,0,0,0.75); backdrop-filter: blur(10px);
+            color: #fff; padding: 4px 10px; border-radius: 30px;
+            font-size: 0.7rem; font-weight: 700; letter-spacing: 0.5px;
+            text-transform: uppercase; z-index: 6;
+            display: flex; align-items: center; gap: 5px;
+        }
+        .card-resume-badge svg { width: 10px; height: 10px; fill: var(--primary); }
+
         #search-view { padding: 130px 5% 50px; }
         .search-header-layout { max-width: 860px; margin: 0 auto 50px; text-align: center; }
         .search-title { font-size: 2.8rem; font-weight: 800; margin-bottom: 30px; text-shadow: 0 4px 20px rgba(0,0,0,0.5); }
@@ -405,6 +421,33 @@
         .player-header { position: absolute; top: 0; left: 0; width: 100%; padding: 20px 5%; display: flex; justify-content: space-between; align-items: center; z-index: 10; background: linear-gradient(to bottom, rgba(0,0,0,0.85), transparent); }
         .iframe-container { flex-grow: 1; width: 100%; height: 100%; }
         .iframe-container iframe { width: 100%; height: 100%; border: none; }
+
+        /* === RESUME PROMPT MODAL === */
+        #resume-modal {
+            z-index: 6000;
+            background: rgba(0,0,0,0.88); backdrop-filter: blur(25px);
+            display: flex; align-items: center; justify-content: center; padding: 5%;
+        }
+        .resume-card {
+            background: #141414; border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 20px; padding: 36px 32px; max-width: 480px; width: 100%;
+            text-align: center; box-shadow: 0 30px 80px rgba(0,0,0,0.8);
+            animation: slideUpFade 0.4s var(--ease-out-expo) forwards;
+        }
+        .resume-card h2 { font-size: 1.5rem; font-weight: 800; margin-bottom: 10px; }
+        .resume-card p { color: var(--text-muted); font-size: 0.95rem; margin-bottom: 26px; line-height: 1.5; }
+        .resume-card p strong { color: #fff; font-weight: 700; }
+        .resume-actions { display: flex; flex-direction: column; gap: 12px; }
+        .resume-btn {
+            padding: 14px 24px; border-radius: 50px; font-weight: 700; font-size: 1rem;
+            display: flex; align-items: center; justify-content: center; gap: 10px;
+            transition: all 0.25s var(--ease-out-back); cursor: pointer;
+        }
+        .resume-btn.primary { background: #fff; color: #000; }
+        .resume-btn.primary:hover { transform: scale(1.04); background: var(--primary); color: #fff; }
+        .resume-btn.secondary { background: rgba(255,255,255,0.08); color: #fff; border: 1px solid rgba(255,255,255,0.15); }
+        .resume-btn.secondary:hover { background: rgba(255,255,255,0.16); }
+        .resume-btn svg { width: 18px; height: 18px; }
 
         .global-close { position: fixed; top: 25px; right: 5%; z-index: 2100; background: rgba(20,20,20,0.8); backdrop-filter: blur(15px); width: 44px; height: 44px; border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 1px solid rgba(255,255,255,0.2); }
         .global-close:hover { transform: scale(1.1); background: white; color: black; }
@@ -777,7 +820,6 @@
         <div id="details-footer"></div>
     </div>
 
-    <!-- FULLSCREEN YOUTUBE TRAILER MODAL -->
     <div id="yt-modal" class="modal-overlay" style="z-index: 5000;">
         <button class="yt-close" onclick="app.closeTrailer()" aria-label="Close trailer">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
@@ -796,6 +838,25 @@
             <button class="circle-btn" onclick="app.closePlayer()"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>
         </div>
         <div class="iframe-container" id="iframe-container"></div>
+    </div>
+
+    <!-- RESUME PROMPT MODAL -->
+    <div id="resume-modal" class="modal-overlay">
+        <div class="resume-card">
+            <h2>Continue watching?</h2>
+            <p>You left off at <strong id="resume-time-label">00:00</strong> in <strong id="resume-title-label">this title</strong>.</p>
+            <div class="resume-actions">
+                <button class="resume-btn primary" id="resume-btn">
+                    <svg viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+                    Resume
+                </button>
+                <button class="resume-btn secondary" id="restart-btn">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="1 4 1 10 7 10"></polyline><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"></path></svg>
+                    Start Over
+                </button>
+                <button class="resume-btn secondary" id="cancel-resume-btn">Cancel</button>
+            </div>
+        </div>
     </div>
 
     <div class="toast" id="toast">
@@ -934,9 +995,12 @@
             }
         }
 
+        // ============ STORAGE (now with per-title progress) ============
         const storage = {
             listKey: 'jovy_mylist',
             historyKey: 'jovy_history',
+            progressKey: 'jovy_progress', // { "movie:12345": { seconds, duration, updatedAt } }
+
             getList: () => JSON.parse(localStorage.getItem(storage.listKey)) || [],
             hasInList: (id) => storage.getList().some(i => i.id === id),
             toggleList: (item) => {
@@ -947,11 +1011,45 @@
                 localStorage.setItem(storage.listKey, JSON.stringify(list));
                 return !exists;
             },
+
             getHistory: () => JSON.parse(localStorage.getItem(storage.historyKey)) || [],
             recordHistory: (item) => {
                 let hist = storage.getHistory().filter(h => h.id !== item.id);
                 hist.unshift({ ...item, timestamp: Date.now() });
                 localStorage.setItem(storage.historyKey, JSON.stringify(hist.slice(0, 20)));
+            },
+            removeHistory: (id) => {
+                const hist = storage.getHistory().filter(h => h.id !== id);
+                localStorage.setItem(storage.historyKey, JSON.stringify(hist));
+            },
+
+            // ---------- progress tracking ----------
+            getAllProgress: () => JSON.parse(localStorage.getItem(storage.progressKey)) || {},
+            progressKeyFor: (id, type) => `${type}:${id}`,
+            getProgress: (id, type) => {
+                const all = storage.getAllProgress();
+                return all[storage.progressKeyFor(id, type)] || null;
+            },
+            saveProgress: (id, type, seconds, duration) => {
+                const all = storage.getAllProgress();
+                const key = storage.progressKeyFor(id, type);
+                // If watched past 95%, mark as completed (remove from continue watching)
+                if (duration && seconds / duration >= 0.95) {
+                    delete all[key];
+                } else {
+                    all[key] = { seconds: Math.floor(seconds), duration: Math.floor(duration || 0), updatedAt: Date.now() };
+                }
+                localStorage.setItem(storage.progressKey, JSON.stringify(all));
+            },
+            clearProgress: (id, type) => {
+                const all = storage.getAllProgress();
+                delete all[storage.progressKeyFor(id, type)];
+                localStorage.setItem(storage.progressKey, JSON.stringify(all));
+            },
+            getProgressPercent: (id, type) => {
+                const p = storage.getProgress(id, type);
+                if (!p || !p.duration) return 0;
+                return Math.min(100, Math.round((p.seconds / p.duration) * 100));
             }
         };
 
@@ -973,6 +1071,15 @@
             }
         };
 
+        function formatTime(seconds) {
+            if (!seconds || seconds < 0) return '00:00';
+            const h = Math.floor(seconds / 3600);
+            const m = Math.floor((seconds % 3600) / 60);
+            const s = Math.floor(seconds % 60);
+            if (h > 0) return `${h}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+            return `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+        }
+
         const app = {
             searchTimeout: null,
             fluidBg: null,
@@ -982,6 +1089,11 @@
             heroTimer: null,
             heroPaused: false,
             HERO_INTERVAL: 5000,
+
+            // Player watch-time tracking
+            playStartTime: 0,
+            playTickInterval: null,
+            currentPlaying: null,
 
             footerHTML: `
                 <footer class="site-footer">
@@ -1072,6 +1184,11 @@
                 }
 
                 window.addEventListener('hashchange', () => this.handleDeepLink());
+
+                // Save progress if user leaves the page mid-playback
+                window.addEventListener('beforeunload', () => {
+                    this.savePlayProgress();
+                });
 
                 this.setTheme(localStorage.getItem('jovy_theme') || 'green');
                 this.setupFilterDropdowns();
@@ -1177,9 +1294,20 @@
                 const year = (item.release_date || item.first_air_date || '').split('-')[0];
                 const rating = (item.vote_average || 0).toFixed(1);
 
+                const pct = storage.getProgressPercent(item.id, type);
+                const showProgress = pct > 0 && pct < 95;
+                const progressBar = showProgress
+                    ? `<div class="card-progress-bar" style="width:${pct}%"></div>`
+                    : '';
+                const resumeBadge = showProgress
+                    ? `<div class="card-resume-badge"><svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>${pct}%</div>`
+                    : '';
+
                 return `
                     <div class="card" onclick="app.openDetails(${item.id}, '${type}')">
                         <img src="${CONFIG.POSTER_URL}${item.poster_path}" class="card-img" loading="lazy" alt="Poster">
+                        ${resumeBadge}
+                        ${progressBar}
                         <div class="card-overlay">
                             <div class="card-play-center"><svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg></div>
                             <div class="card-info">
@@ -1211,10 +1339,10 @@
                 const menu = document.getElementById(menuId);
                 const trigger = menu.previousElementSibling?.classList.contains('row-dropdown-trigger') ? menu.previousElementSibling : menu.parentElement.querySelector('.row-dropdown-trigger');
                 const isOpen = menu.classList.contains('active');
-                
+
                 document.querySelectorAll('.row-dropdown-menu').forEach(m => m.classList.remove('active'));
                 document.querySelectorAll('.row-dropdown-trigger').forEach(t => t.classList.remove('open'));
-                
+
                 if (!isOpen) {
                     menu.classList.add('active');
                     if (trigger) trigger.classList.add('open');
@@ -1273,11 +1401,18 @@
             },
 
             updateWatchedSection() {
+                // Build history list combining watch history with saved progress
                 const history = storage.getHistory();
                 const cwRow = document.getElementById('row-continue-watching');
                 const bwRow = document.getElementById('row-because-watched');
 
-                if (!history.length) {
+                // Filter history to only include items that still have in-progress playback
+                const inProgress = history.filter(h => {
+                    const pct = storage.getProgressPercent(h.id, h.media_type || h.type || 'movie');
+                    return pct > 0 && pct < 95;
+                });
+
+                if (!inProgress.length) {
                     if (cwRow) cwRow.classList.add('hidden');
                     if (bwRow) bwRow.classList.add('hidden');
                     return;
@@ -1285,16 +1420,16 @@
 
                 if (cwRow) {
                     cwRow.classList.remove('hidden');
-                    document.getElementById('continue-watching-carousel').innerHTML = history.map(item => this.createCardHTML(item, item.media_type)).join('');
+                    document.getElementById('continue-watching-carousel').innerHTML = inProgress.map(item => this.createCardHTML(item, item.media_type)).join('');
                 }
 
                 if (bwRow) {
                     bwRow.classList.remove('hidden');
-                    const latest = history[0];
+                    const latest = inProgress[0];
                     document.getElementById('watched-title-text').textContent = latest.title || latest.name;
 
                     const dropdown = document.getElementById('watched-dropdown');
-                    dropdown.innerHTML = history.map(h => `
+                    dropdown.innerHTML = inProgress.map(h => `
                         <div class="row-dropdown-item" onclick="app.selectWatchedRecommendation(${h.id}, '${(h.title || h.name).replace(/'/g, "\\'")}', '${h.media_type}')">
                             ${h.title || h.name}
                         </div>
@@ -1590,7 +1725,7 @@
                 const safeTitle = title.replace(/'/g, "\\'");
 
                 document.getElementById('details-bg').style.backgroundImage = data.backdrop_path ? `url(${CONFIG.IMG_URL}${data.backdrop_path})` : 'none';
-                
+
                 const detailsTitleCon = document.getElementById('details-title-container');
                 this.renderTitleGraphic(detailsTitleCon, title, data.images?.logos);
 
@@ -1607,7 +1742,14 @@
                     <span style="display:flex; align-items:center; gap:4px;"><svg class="star-icon" viewBox="0 0 24 24" fill="#f5c518"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg> ${rating}</span>
                 `;
 
-                document.getElementById('details-play').onclick = () => this.openPlayer(id, type, safeTitle, data.poster_path);
+                // Play button: resume if progress exists
+                const progress = storage.getProgress(id, type);
+                const resumePct = storage.getProgressPercent(id, type);
+                const playBtn = document.getElementById('details-play');
+                playBtn.innerHTML = (progress && resumePct > 0 && resumePct < 95)
+                    ? `<svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg> Resume (${formatTime(progress.seconds)})`
+                    : `<svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg> Play`;
+                playBtn.onclick = () => this.openPlayer(id, type, safeTitle, data.poster_path, 1, 1, { skipResumePrompt: false });
 
                 const listBtn = document.getElementById('details-list');
                 const updateBtn = () => {
@@ -1640,7 +1782,6 @@
                     castSec.classList.remove('hidden');
                 } else castSec.classList.add('hidden');
 
-                // Trailers section
                 const trailersSec = document.getElementById('trailers-section');
                 const trailerVids = (data.videos?.results || []).filter(v => v.site === 'YouTube' && ['Trailer', 'Teaser', 'Clip', 'Featurette'].includes(v.type));
                 if (trailerVids.length) {
@@ -1716,19 +1857,134 @@
                 setTimeout(() => { document.getElementById('yt-iframe-container').innerHTML = ''; }, 400);
             },
 
-            openPlayer(id, type, title, poster_path, s = 1, e = 1) {
+            // ============== PLAYER WITH RESUME ==============
+            openPlayer(id, type, title, poster_path, s = 1, e = 1, opts = {}) {
+                const existing = storage.getProgress(id, type);
+                const pct = storage.getProgressPercent(id, type);
+
+                // If we have progress between 1% and 95% → show resume prompt
+                if (!opts.skipResumePrompt && existing && existing.seconds > 30 && pct > 0 && pct < 95) {
+                    this.showResumePrompt(id, type, title, poster_path, s, e, existing);
+                    return;
+                }
+
+                this.startPlayer(id, type, title, poster_path, s, e, 0);
+            },
+
+            showResumePrompt(id, type, title, poster_path, s, e, progress) {
+                const modal = document.getElementById('resume-modal');
+                document.getElementById('resume-time-label').textContent = formatTime(progress.seconds);
+                document.getElementById('resume-title-label').textContent = title;
+
+                const resumeBtn = document.getElementById('resume-btn');
+                const restartBtn = document.getElementById('restart-btn');
+                const cancelBtn = document.getElementById('cancel-resume-btn');
+
+                // Clean old listeners by cloning
+                const newResumeBtn = resumeBtn.cloneNode(true);
+                const newRestartBtn = restartBtn.cloneNode(true);
+                const newCancelBtn = cancelBtn.cloneNode(true);
+                resumeBtn.replaceWith(newResumeBtn);
+                restartBtn.replaceWith(newRestartBtn);
+                cancelBtn.replaceWith(newCancelBtn);
+
+                newResumeBtn.onclick = () => {
+                    modal.classList.remove('active');
+                    document.body.classList.remove('no-scroll');
+                    this.startPlayer(id, type, title, poster_path, s, e, progress.seconds);
+                };
+
+                newRestartBtn.onclick = () => {
+                    modal.classList.remove('active');
+                    document.body.classList.remove('no-scroll');
+                    storage.clearProgress(id, type);
+                    this.startPlayer(id, type, title, poster_path, s, e, 0);
+                };
+
+                newCancelBtn.onclick = () => {
+                    modal.classList.remove('active');
+                    document.body.classList.remove('no-scroll');
+                };
+
+                modal.classList.add('active');
+                document.body.classList.add('no-scroll');
+            },
+
+            startPlayer(id, type, title, poster_path, s, e, startSeconds) {
                 storage.recordHistory({ id, type, title, poster_path, media_type: type });
                 this.updateWatchedSection();
 
+                // Stop any existing progress tracking
+                this.stopProgressTracker();
+
                 document.getElementById('player-title').textContent = title || 'Playing';
-                const url = type === 'movie' ? `${CONFIG.CINESRC}/movie/${id}` : `${CONFIG.CINESRC}/tv/${id}?s=${s}&e=${e}`;
+
+                // Build the URL with timestamp if resuming
+                let url = type === 'movie'
+                    ? `${CONFIG.CINESRC}/movie/${id}`
+                    : `${CONFIG.CINESRC}/tv/${id}?s=${s}&e=${e}`;
+                if (startSeconds && startSeconds > 0) {
+                    url += `${url.includes('?') ? '&' : '?'}t=${Math.floor(startSeconds)}`;
+                }
+
                 document.getElementById('iframe-container').innerHTML = `<iframe src="${url}" allowfullscreen></iframe>`;
                 document.getElementById('player-modal').classList.add('active');
+                document.body.classList.add('no-scroll');
+
+                // Track playback time — assume iframe has been open for X seconds
+                this.currentPlaying = {
+                    id, type, title, poster_path,
+                    startSeconds: startSeconds || 0,
+                    startedAt: Date.now(),
+                    duration: this.guessDuration(id, type),
+                    season: s, episode: e
+                };
+                this.startProgressTracker();
+            },
+
+            // Best guess of runtime — fall back to 2h for movies, 45min for TV
+            guessDuration(id, type) {
+                if (type === 'movie') return 2 * 60 * 60;
+                return 45 * 60;
+            },
+
+            startProgressTracker() {
+                this.playTickInterval = setInterval(() => {
+                    this.savePlayProgress();
+                }, 5000); // every 5 seconds
+            },
+
+            stopProgressTracker() {
+                if (this.playTickInterval) {
+                    clearInterval(this.playTickInterval);
+                    this.playTickInterval = null;
+                }
+            },
+
+            savePlayProgress() {
+                if (!this.currentPlaying) return;
+                const elapsed = Math.floor((Date.now() - this.currentPlaying.startedAt) / 1000);
+                const total = this.currentPlaying.startSeconds + elapsed;
+                storage.saveProgress(
+                    this.currentPlaying.id,
+                    this.currentPlaying.type,
+                    total,
+                    this.currentPlaying.duration
+                );
             },
 
             closePlayer() {
+                // Save progress before closing
+                this.savePlayProgress();
+                this.stopProgressTracker();
+                this.currentPlaying = null;
+
                 document.getElementById('player-modal').classList.remove('active');
+                document.body.classList.remove('no-scroll');
                 setTimeout(() => { document.getElementById('iframe-container').innerHTML = ''; }, 400);
+
+                // Refresh continue watching row
+                this.updateWatchedSection();
             }
         };
 
